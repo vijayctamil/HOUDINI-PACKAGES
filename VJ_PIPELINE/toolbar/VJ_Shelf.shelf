@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<shelfDocument>
+  <!-- This file contains definitions of shelves, toolbars, and tools.
+ It should not be hand-edited when it is being used by the application.
+ Note, that two definitions of the same element are not allowed in
+ a single file. -->
+
+  <toolshelf name="VJ_Shelf" label="VJ_SHELF">
+    <memberTool name="cmdlineTOP"/>
+    <memberTool name="quick_null_tool"/>
+    <memberTool name="quick_object_merge"/>
+    <memberTool name="create_render_object"/>
+  </toolshelf>
+
+  <tool name="cmdlineTOP" label="Create CmdLine TOP" icon="hicon:/SVGIcons.index?ROP_shell.svg">
+    <script scriptType="python"><![CDATA[import hou
+import os
+import glob
+
+def create_topnet():
+    if not (hou.node('/obj/Command_Line_TOPNET')):
+        obj = hou.node("/obj")
+        topnet = obj.createNode('topnet', 'Command_Line_TOPNET')
+        topnet.moveToGoodPosition()
+        return topnet
+    else:
+        topnet = hou.node('/obj/Command_Line_TOPNET')
+        return topnet
+    
+def set_nodes():
+    selected_nodes = hou.selectedNodes()
+    rop_nodes = []
+    
+    ropparmlist = {"rop_geometry" : "sopoutput",
+    "rop_fbx" : "sopoutput",
+    "rop_alembic" : "filename",
+    "rop_gltf" : "file",
+    "ifd" : "vm_picture",
+    "usd_rop" : "lopoutput",
+    "rop_comp" : "compoutput",
+    "usdrender_rop" : "outputimage"}
+    
+    for node in selected_nodes:
+        if(node.type().name() == 'filecache::2.0'):
+            children = node.children()
+            for child in children:
+                if(child.type().name() == "rop_geometry"):
+                    rop_nodes.append(child)              
+        elif(node.type().name() in ropparmlist):
+            rop_nodes.append(node)
+    
+    #Create TOPNet
+    topnet = create_topnet()
+    child = []
+    #Process all Selected ROP Render Nodes
+    for node in rop_nodes:
+    
+        path = node.path()
+        type = node.type().name()
+        parm = ropparmlist.get(type)
+        start = str(int(node.parm('f1').eval()))
+        end = str(int(node.parm('f2').eval()))
+        range = start + '-' + end
+
+        if (node.parent().type().name() == 'filecache::2.0'):
+            #value = node.parent().parm('descriptivelabel').eval()
+            name = node.parent().name()
+        else:
+            #value = node.parm(parm).rawValue()
+            name = node.name()
+         
+        
+        #Create VJ_Cmdline_Render_Setup
+        if(hou.node('/obj/Command_Line_TOPNET/VJ_Cmdline_Render_Setup_{}'.format(name))):
+            raise hou.Error("{} Render Setup Already Exists".format(name))
+        else:
+            vjnode = topnet.createNode('VJ_Cmdline_Render_Setup')
+            vjnode.moveToGoodPosition()
+            child.append(vjnode)
+            
+            parm_dict = {
+                "rndrnameset" : 1,
+                "rndrname" : name,
+                "roppath" : path
+            }
+
+            for x,y in parm_dict.items():
+                vjnode.parm(x).set(y)
+            
+            vjnode.parm('rf').set(range)
+            vjnode.parm('rndrnameset').pressButton()
+            vjnode.parm('readfile').pressButton()
+#Call Function
+set_nodes()]]></script>
+  </tool>
+
+  <tool name="quick_null_tool" label="Quick NULL" icon="$VJ_PIPELINE/config/Icons/VJ_quick_null_v02.svg">
+    <script scriptType="python"><![CDATA[import hou
+import os
+
+def get_name():
+    input = hou.ui.readInput("NAME", buttons=('OK','CANCEL'), severity=hou.severityType.Message, default_choice=0, close_choice=1, title="Quick Null")
+
+    if(input[0] == 0):
+        name = str(input[1])
+    else:
+        return
+    return name
+
+def create_null(parent,main,name):
+    null = parent.createNode('null',name)
+    null.setInput(0, main, 0)
+    null.moveToGoodPosition()
+    null.setColor(hou.Color((0, 0, 0)))
+    return null
+
+selected_nodes = hou.selectedNodes()
+name = get_name()
+
+if (name):
+    #SET NAME
+    name = name.upper()
+    name = 'OUT_' + name
+    length = len(selected_nodes)
+
+    if(length == 1):
+        main = selected_nodes[0]
+        parent = main.parent()
+        null = create_null(parent,main,name)
+        
+    elif(length > 1):
+        for i in range(length):
+            main = selected_nodes[i]
+            parent = main.parent()
+            index = i+1
+            index = str(index)
+            ext = "{}_{}".format(name,index)
+            null = create_null(parent,main,ext)
+
+    null.setDisplayFlag(True)
+    null.setRenderFlag(True)]]></script>
+  </tool>
+
+  <tool name="quick_object_merge" label="Quick Object Merge" icon="$VJ_PIPELINE/config/Icons/VJ_quick_object_merge.svg">
+    <script scriptType="python"><![CDATA[import hou
+import os
+
+selected_nodes = hou.selectedNodes()
+
+if(selected_nodes):
+    for node in selected_nodes:
+        name = node.name()
+        name = name.replace('OUT_','')
+        name = 'IN_{}'.format(name)
+        path = node.path()
+        parent = node.parent()
+        node_pos = node.position()
+        
+        node_pos[1] = node_pos[1] - 1.50
+
+        om = parent.createNode('object_merge',name)
+        om.setColor(hou.Color((0.094, 0.369, 0.69)))
+
+        om.parm('objpath1').set(path)
+        om.parm('xformtype').set(1)
+
+        om.setPosition(node_pos)
+        om.setDisplayFlag(True)
+        om.setRenderFlag(True)]]></script>
+  </tool>
+
+  <tool name="create_render_object" label="Create Render Object" icon="hicon:/SVGIcons.index?LOP_collection.svg">
+    <script scriptType="python"><![CDATA[import hou
+import os
+
+def get_name(name):
+    msg = (
+        """
+        RENDER NULL NAME
+        (selected node : {})
+        """.format(name)
+    )
+    input = hou.ui.readInput(msg, buttons=('OK','CANCEL'), severity=hou.severityType.Message, default_choice=0, close_choice=1, title="Create Render Object")
+
+    if(input[0] == 0):
+        name = str(input[1])
+    else:
+        return
+    return name
+
+def create_null(parent,main,name):
+    null = parent.createNode('null',name)
+    null.setInput(0, main, 0)
+    null.moveToGoodPosition()
+    null.setColor(hou.Color((0, 0, 0)))
+    return null
+
+def create_OM(name,path,parent,i):
+        
+        name = name.replace('OUT_','') 
+        name = name.replace('RENDER_','')
+        geo_name = "R_{}".format(name)
+        in_name = 'IN_RENDER_{}'.format(name)
+
+        obj = hou.node('/obj/')
+        node_pos = parent.position()
+        
+        node_pos[1] = node_pos[1] - (1.50 * i)
+
+        r_obj = obj.createNode('geo',geo_name)
+        r_obj.setColor(hou.Color((1,0,0)))
+        r_obj.setPosition(node_pos)
+        r_obj.setDisplayFlag(True)
+
+        om = r_obj.createNode('object_merge',in_name)
+        om.setColor(hou.Color((0.094, 0.369, 0.69)))
+        om.parm('objpath1').set(path)
+        om.parm('xformtype').set(1)
+        om.moveToGoodPosition()
+
+        op = r_obj.createNode('output','output')
+        op.setInput(0,om,0)
+        op.moveToGoodPosition()
+        op.setDisplayFlag(True)
+        op.setRenderFlag(True)
+
+
+
+
+
+selected_nodes = []
+selected_nodes = hou.selectedNodes()
+pos_inc = 0
+
+for node in selected_nodes:
+    type = node.type().name()
+    pos_inc = pos_inc + 1
+
+    if(type == 'null'):
+
+        name = node.name()
+        path = node.path()
+        parent = node.parent()
+        render_objs = create_OM(name,path,parent,pos_inc)
+        
+    else:
+
+        sel_name = node.name()
+        name = get_name(sel_name)
+
+        if (name):
+            #SET NAME
+            name = name.upper()
+            name = 'OUT_RENDER_' + name
+            main = node
+            parent = main.parent()
+            null = create_null(parent,main,name)
+            null.setDisplayFlag(True)
+            null.setRenderFlag(True)
+            path = null.path()
+            render_objs = create_OM(name,path,parent,pos_inc)]]></script>
+  </tool>
+</shelfDocument>

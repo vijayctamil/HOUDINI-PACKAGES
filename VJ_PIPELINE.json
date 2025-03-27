@@ -1,0 +1,37 @@
+{
+    "hpath" : "$VJ_PIPELINE",
+    "env" : [
+        
+        {
+            "VJ_PIPELINE" : "C:/Users/ADMIN/Documents/houdini20.5/packages/VJ_PIPELINE"
+        },
+        {
+            "HOUDINI_PATH" : "$VJ_PIPELINE"
+        },
+        {
+            "RND" : "//Render02/vijay3/HOUDINI RNDS"
+        },
+        {
+            "HOUDINI_SPLASH_MESSAGE" : "Version: ${HOUDINI_VERSION} \n VIJAY C TAMIL"
+        },
+        {
+            "HOUDINI_SPLASH_FILE" : "$VJ_PIPELINE/splash/RUNNING SHOT SPLASH.jpg"
+        },
+        {
+            "TEX_SO" : "Z:/Input/Assets/Boat/MAYA FILE/sourceimages"
+        },
+        {
+            "CACHE_SO" : "A:/CACHE"
+        },
+        {
+            "RENDER_SO" : "R:/RENDERS"
+        },
+        {
+            "SHOTS_SO" : "Z:/Shots"
+        },
+        {
+            "RND_SO" : "Z:/rnd/houdini"
+        }
+
+    ]
+}
