@@ -46,6 +46,33 @@ HOUDINI-PACKAGES/
 
 ---
 
+## ⚙️ Key Functionalities
+
+The package provides the following custom features out-of-the-box:
+
+1. **Automatic ACES Setup**  
+   Automatically sets up ACES color management within Houdini for consistent rendering pipelines.
+
+2. **Custom Environmental Variables**  
+   Provides centralized control over production paths, cache directories, and studio-wide configuration through editable JSON files.
+
+3. **Custom Splash Screen and Message**  
+   Personalizes the Houdini launch experience with a custom splash image and metadata message.
+
+4. **External Editor Setup**  
+   Launch any preferred code editor (VS Code, Sublime Text, etc.) directly from Houdini using the `Editor.json` config.
+
+5. **Customizable Organized Pipeline-based Startup File**  
+   Provides a base `.hip` file structure tailored for studio production with predefined nodes, cameras, and naming conventions.
+
+6. **Dedicated Shelf Tools – “VJ Shelf”**  
+   A separate shelf loaded with useful tools specifically built for Houdini production workflows.
+
+7. **Custom Digital Assets (OTLS) under “VJ” TAB Menu**  
+   All HDAs are organized under the `VJ` tab for quick access to reusable and optimized nodes.
+
+---
+
 ## ✏️ Customizing `VJ_PIPELINE.json`
 
 You can modify `VJ_PIPELINE.json` to reflect your local paths and preferences. Here's what each key does:
@@ -108,7 +135,14 @@ Make sure the path is correct and accessible on your machine.
 Contributions are welcome!  
 If you have tools, scripts, or configurations that could benefit the Houdini community, feel free to fork this repository and submit a pull request.
 
+---
 
+## 📄 License
+
+This project is licensed under the MIT License.  
+See the [LICENSE](LICENSE) file for details.
+
+---
 
 *Enhance your Houdini experience with these customized packages and tools.*
 
