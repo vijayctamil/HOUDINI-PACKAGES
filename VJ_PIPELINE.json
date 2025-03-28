@@ -18,7 +18,7 @@
             "HOUDINI_SPLASH_FILE" : "$VJ_PIPELINE/splash/RUNNING SHOT SPLASH.jpg"
         },
         {
-            "TEX_SO" : "Z:/Input/Assets/Boat/MAYA FILE/sourceimages"
+            "TEX_SO" : "Z:/Textures"
         },
         {
             "CACHE_SO" : "A:/CACHE"
