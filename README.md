@@ -48,6 +48,8 @@ HOUDINI-PACKAGES/
 
 ## ⚙️ Key Functionalities
 
+> 🔗 For detailed documentation on each feature, see [Functionality Details](./Functionality%20Details.md)
+
 The package provides the following custom features out-of-the-box:
 
 1. **Automatic ACES Setup**  
