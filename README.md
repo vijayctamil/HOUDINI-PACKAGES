@@ -108,14 +108,7 @@ Make sure the path is correct and accessible on your machine.
 Contributions are welcome!  
 If you have tools, scripts, or configurations that could benefit the Houdini community, feel free to fork this repository and submit a pull request.
 
----
 
-## 📄 License
-
-This project is licensed under the MIT License.  
-See the [LICENSE](LICENSE) file for details.
-
----
 
 *Enhance your Houdini experience with these customized packages and tools.*
 
